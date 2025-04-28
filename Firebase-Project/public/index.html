@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- Complete Project Details at: https://RandomNerdTutorials.com/ -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SAFF App</title>
+
+    <!-- update the version number as needed -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+
+    <!-- include only the Firebase features as you need -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+
+    <script>
+      // REPLACE WITH YOUR web app's Firebase configuration
+      const firebaseConfig = {
+            apiKey: "AIzaSyCN5HYE2jwqTxUT9WXhPMSdsN1Gief8qj8",
+            authDomain: "saff-d24a0.firebaseapp.com",
+            databaseURL: "https://saff-d24a0-default-rtdb.firebaseio.com",
+            projectId: "saff-d24a0",
+            storageBucket: "saff-d24a0.firebasestorage.app",
+            messagingSenderId: "648352635573",
+            appId: "1:648352635573:web:0fbadc5657992f6bfa3cfc"
+        };
+
+      // Initialize firebase
+      firebase.initializeApp(firebaseConfig);
+
+      // Make auth and database references
+      const auth = firebase.auth();
+      const db = firebase.database();
+
+    </script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+  <!--Header-->
+  <div class="topnav">
+    <h1>
+      <span><img src="favicon.png" alt="SAFF Logo" width="36" height="36" style="float: left; text-align: left; padding: 0px"> SAFF</span>
+      <span><i id="authentication-status" class="fas fa-user-circle" style="color: white; float: right; text-align: right; margin-right: 15px; padding: 5px"></i></span>
+      <span><i id="wifi-status" class="fas fa-wifi" style="color: white; float: right; text-align: right; margin-right: 10px; padding: 5px"></i></span>
+    </h1>
+  </div>
+
+  <!--LOGIN FORM-->
+  <form id="login-form" style="display: none;">
+    <h2>SAFF Login <i class="fas fa-user" style="color: #e74a26;"></i></h2>
+      <div class="form-elements-container">
+        <label for="input-email"><b>Email</b></label>
+        <input type="text" placeholder="Enter Username" id="input-email" required>
+
+        <label for="input-password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" id="input-password" required>
+
+        <button type="submit" id="login-button">Login</button>
+        <p id="error-message" style="color:red;"></p>      
+    </div>
+  </form>
+
+  <!-- AUTHENTICATION BAR (USER DETAILS/LOGOUT BUTTON) -->
+  <span id="authentication-bar" style="display: none; text-align: right; margin-right: 5px;">
+      <span id="user-details"> USER_EMAIL</span>
+      <a href="/" id="logout-link">(logout)</a>
+  </span>
+
+  <!--CONTENT (SENSOR READINGS)-->
+  <div class="content-sign-in" id="content-sign-in" style="display: none;">
+    <h2>SAFF Control <i class="fas fa-gamepad" style="color: #e74a26;"></i></h2>
+    <!--CARD FOR CALIBRATION BUTTON-->
+    <div class="card"><br>
+      <p class="card-title">Food Remaining Calibration</p>
+        <button class="button-on" id="cal-btn">Calibrate</button>
+    </div><br>
+    <!--CARD FOR MANUAL FEED BUTTON-->
+    <div class="card"><br>
+      <p class="card-title"><i class="fas fa-fish" style="color: #e74a26;"></i> Manual Feed Button</p>
+        <button class="button-on" id="btn1On">Feed</button>
+        <!-- <button class="button-off" id="btn1Off">Stop</button> -->
+      <p class="state">State:<span id="state1"></span></p><br>
+    </div><br>
+    <!--CARD FOR SCHEDULE-->
+    <div class="card"><br>
+      <p class="card-title"><i class="fas fa-clock" style="color: #e74a26;"></i> Feeding Times</p>
+      <p id="enter-time"><label> Enter Time (h:m AM/PM): </label><input type="time" placeholder="Enter Time" id="input-time" required> <button type="submit" id="add-button">Add</button></p>
+        <p class="state" id="first-time">Time 1: <span id="hour1"></span>:<span id="min1"></span> <button type="submit" id="rem-first">Remove</button></p>
+        <p class="state" id="second-time">Time 2: <span id="hour2"></span>:<span id="min2"></span> <button type="submit" id="rem-second">Remove</button></p>
+        <p class="state" id="third-time">Time 3: <span id="hour3"></span>:<span id="min3"></span> <button type="submit" id="rem-third">Remove</button></p>
+        <p class="state" id="fourth-time">Time 4: <span id="hour4"></span>:<span id="min4"></span> <button type="submit" id="rem-fourth">Remove</button></p>
+      <p id="error-message" style="color:red;"></p><br>
+    </div><br>
+    <!--CARD FOR CAMERA-->
+    <div class="card"><br>
+      <p class="card-title"><i class="fas fa-video" style="color: #e74a26;"></i> Camera</p>
+      <!-- <button onclick="myFunction()">View</button>
+      <script>
+      function myFunction() {
+        var x = document.createElement("IFRAME");
+        x.setAttribute("src", "http://104.154.146.66:8080/");
+        document.body.appendChild(x);
+      }
+      </script><br> -->
+      <!-- <iframe src="https://www.google.com/search?q=%http://104.154.146.66:8080/" height=1000 width=1200>
+      </iframe><br><br> -->
+      <!-- <a id="view-feed" href="javascript:window.open('http://34.9.162.249:8080/','mypopuptitle','width=600,height=600,left=550,top=500')">View Feed</a><br><br>
+      <a id="close-feed" href="javascript:window.close('http://34.9.162.249:8080/','mypopuptitle','width=600,height=600,left=550,top=500')">Close Feed</a><br><br> -->
+      <button onclick="openWin()">View</button>
+      <button onclick="closeWin()">Close</button><br><br>
+      <script>
+      let myWindow;
+      function openWin() {
+        myWindow = window.open("http://safffeeder.zapto.org:8080/", "", "width=600,height=600,left=550,top=500");
+        dbRefOutput10.set(1);
+      }
+      function closeWin() {
+        myWindow.close();
+        dbRefOutput10.set(0);
+      }
+      </script>
+  </div>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/index.js"></script>
+  </body>
+</html>
